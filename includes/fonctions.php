@@ -130,6 +130,17 @@ function getAllClientsWithAddress($pdo) {
     return $clients_lower;
 }
 
+function searchClient($pdo, $data) {
+    $stmt = $pdo->prepare("SELECT nom, prenom, email FROM Client WHERE nom = ? AND prenom = ? AND email = ?");
+    $stmt->execute([
+        $data['nom'],
+        $data['prenom'],
+        $data['email'],
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 // ==================== EMPLOYES ====================
 function getAllEmployesWithDetails($pdo) {
     $stmt = $pdo->query("
