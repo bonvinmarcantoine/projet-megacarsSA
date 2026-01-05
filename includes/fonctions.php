@@ -129,17 +129,28 @@ function getAllClientsWithAddress($pdo) {
     
     return $clients_lower;
 }
-/*
+
 function searchClient($pdo, $data) {
-    $stmt = $pdo->prepare("SELECT nom, prenom, email FROM Client WHERE nom = ? AND prenom = ? AND email = ?");
+    $stmt = $pdo->prepare("SELECT 1 FROM Client WHERE (nom = ? AND prenom = ?)");
     $stmt->execute([
         $data['nom'],
-        $data['prenom'],
+        $data['prenom']
+    ]);
+    
+    $stmt = $pdo->prepare("SELECT 2 FROM Client WHERE email = ?");
+    $stmt->execute([
         $data['email'],
     ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Convertir en texte lisible pour JS
+    $message = json_encode($data); // transforme le tableau en chaîne JSON
+
+    // Afficher l'alert
+    echo "<script>alert($message);</script>";
+    return $data;
 }
-*/
+
 
 // ==================== EMPLOYES ====================
 function getAllEmployesWithDetails($pdo) {

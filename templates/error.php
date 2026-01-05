@@ -1,5 +1,10 @@
 <div>
     <h2>❌ Erreur</h2>
-    <p>Un client avec ce nom existe déjà dans notre base de données.</p>
-    <a href="?page=ajout_client">← Retour au formulaire</a>
+    <p>
+    s
+</p>
+    <br> </br>
+    <a href="?page=ajout_client" class="btn-add">
+            <span>← Retour au formulaire</span>
+        </a>
 </div>

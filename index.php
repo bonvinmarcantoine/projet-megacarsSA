@@ -21,6 +21,7 @@ switch ($page) {
                 header("Location: ?page=clients");
                 exit;
             }
+            $message = $search;
             header("Location: ?page=error&type=client");
         }
         $mode = 'add';

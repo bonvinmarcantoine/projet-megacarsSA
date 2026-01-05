@@ -124,7 +124,7 @@ nav a:hover {
 
 /* === CONTAINER === */
 .container {
-    max-width: 1500px;
+    width: 90%;
     margin: 0 auto;
     padding: 60px 30px;
     position: relative;
