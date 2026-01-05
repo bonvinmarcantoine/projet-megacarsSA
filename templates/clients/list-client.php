@@ -1,5 +1,11 @@
 <h2>Liste des clients</h2>
 
+<div class="action-bar">
+    <a href="?page=ajout_client" class="btn-add">
+        <i class="fas fa-plus"></i> Ajouter un client
+    </a>
+</div>
+
 <table>
     <tr>
         <th>Nom</th>
