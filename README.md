@@ -38,7 +38,6 @@ Projet réalisé dans un **cadre scolaire**.
 - **PHP**
 - **MySQL**
 - **HTML / CSS**
-- **JavaScript**
 - **Apache** (XAMPP / WAMP / MAMP)
 
 ---
