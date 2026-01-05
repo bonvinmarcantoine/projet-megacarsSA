@@ -25,7 +25,7 @@
             <td><?= htmlspecialchars($client['prenom']) ?></td>
             <td><?= htmlspecialchars($client['entreprise'] ?? 'N/A') ?></td>
             <td><?= htmlspecialchars($client['nationalite'] ?? 'N/A') ?></td>
-            <td><?= htmlspecialchars($client['datenaissance'] ?? 'N/A') ?></td>
+            <td><?= htmlspecialchars($client['dateNaissance'] ?? 'N/A') ?></td>
             <td><?= htmlspecialchars($client['email']) ?></td>
             <td><?= htmlspecialchars($client['telephone'] ?? 'N/A') ?></td>
             <td>

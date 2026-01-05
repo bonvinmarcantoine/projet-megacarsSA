@@ -22,7 +22,7 @@ function getClientById($pdo, $id) {
 
 function addClient($pdo, $data) {
     // D'abord créer l'adresse
-    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (Pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -34,7 +34,7 @@ function addClient($pdo, $data) {
     $idAdresse = $pdo->lastInsertId();
     
     // Ensuite créer le client avec l'idAdresse
-    $stmt = $pdo->prepare("INSERT INTO client (nom, prenom, idAdresse, entreprise, dateNaissance, Nationalite, email, telephone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO client (nom, prenom, idAdresse, entreprise, dateNaissance, nationalite, email, telephone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -53,7 +53,7 @@ function updateClient($pdo, $id, $data) {
     $idAdresse = $client['idAdresse'];
     
     // Mettre à jour l'adresse
-    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET Pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -64,7 +64,7 @@ function updateClient($pdo, $id, $data) {
     ]);
     
     // Mettre à jour le client
-    $stmt = $pdo->prepare("UPDATE client SET nom = ?, prenom = ?, entreprise = ?, dateNaissance = ?, Nationalite = ?, email = ?, telephone = ? WHERE idClient = ?");
+    $stmt = $pdo->prepare("UPDATE client SET nom = ?, prenom = ?, entreprise = ?, dateNaissance = ?, nationalite = ?, email = ?, telephone = ? WHERE idClient = ?");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -90,7 +90,7 @@ function deleteClient($pdo, $id) {
     $stmtAdresse = $pdo->prepare("DELETE FROM Adresse WHERE idAdresse = ?");
     $stmtAdresse->execute([$idAdresse]);
 }
-
+/*
 function searchByName($pdo, $data) {
     $stmt = $pdo->prepare("SELECT nom, prenom, email FROM client WHERE nom = ? AND prenom = ? AND email = ?");
     $stmt->execute([
@@ -100,10 +100,10 @@ function searchByName($pdo, $data) {
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
+*/
 function getClientWithAddress($pdo, $id) {
     $stmt = $pdo->prepare("
-        SELECT c.*, a.Pays, a.ville, a.npa, a.rue, a.numero 
+        SELECT c.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Client c 
         LEFT JOIN Adresse a ON c.idAdresse = a.idAdresse 
         WHERE c.idClient = ?
@@ -114,7 +114,7 @@ function getClientWithAddress($pdo, $id) {
 
 function getAllClientsWithAddress($pdo) {
     $stmt = $pdo->query("
-        SELECT c.*, a.Pays, a.ville, a.npa, a.rue, a.numero 
+        SELECT c.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Client c 
         LEFT JOIN Adresse a ON c.idAdresse = a.idAdresse 
         ORDER BY c.nom
@@ -129,7 +129,7 @@ function getAllClientsWithAddress($pdo) {
     
     return $clients_lower;
 }
-
+/*
 function searchClient($pdo, $data) {
     $stmt = $pdo->prepare("SELECT nom, prenom, email FROM Client WHERE nom = ? AND prenom = ? AND email = ?");
     $stmt->execute([
@@ -139,12 +139,12 @@ function searchClient($pdo, $data) {
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
+*/
 
 // ==================== EMPLOYES ====================
 function getAllEmployesWithDetails($pdo) {
     $stmt = $pdo->query("
-        SELECT e.*, p.poste, tc.contrat, a.Pays, a.ville, a.npa, a.rue, a.numero 
+        SELECT e.*, p.poste, tc.contrat, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Employe e
         LEFT JOIN Poste p ON e.idPoste = p.idPoste
         LEFT JOIN TypeContrat tc ON e.idTypeContrat = tc.idTypeContrat
@@ -156,7 +156,7 @@ function getAllEmployesWithDetails($pdo) {
 
 function getEmployeById($pdo, $id) {
     $stmt = $pdo->prepare("
-        SELECT e.*, a.Pays, a.ville, a.npa, a.rue, a.numero 
+        SELECT e.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Employe e
         LEFT JOIN Adresse a ON e.idAdresse = a.idAdresse
         WHERE e.idEmploye = ?
@@ -166,7 +166,7 @@ function getEmployeById($pdo, $id) {
 }
 
 function addEmploye($pdo, $data) {
-    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (Pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -199,7 +199,7 @@ function updateEmploye($pdo, $id, $data) {
     $employe = getEmployeById($pdo, $id);
     $idAdresse = $employe['idAdresse'];
     
-    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET Pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -310,7 +310,7 @@ function deleteVoiture($pdo, $id) {
 // ==================== FOURNISSEURS ====================
 function getAllFournisseursWithAddress($pdo) {
     $stmt = $pdo->query("
-        SELECT f.*, a.Pays, a.ville, a.npa, a.rue, a.numero 
+        SELECT f.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Fournisseur f
         LEFT JOIN Adresse a ON f.idAdresse = a.idAdresse
         ORDER BY f.nom
@@ -320,7 +320,7 @@ function getAllFournisseursWithAddress($pdo) {
 
 function getFournisseurById($pdo, $id) {
     $stmt = $pdo->prepare("
-        SELECT f.*, a.Pays, a.ville, a.npa, a.rue, a.numero 
+        SELECT f.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Fournisseur f
         LEFT JOIN Adresse a ON f.idAdresse = a.idAdresse
         WHERE f.idFournisseur = ?
@@ -330,7 +330,7 @@ function getFournisseurById($pdo, $id) {
 }
 
 function addFournisseur($pdo, $data) {
-    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (Pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -356,7 +356,7 @@ function updateFournisseur($pdo, $id, $data) {
     $fournisseur = getFournisseurById($pdo, $id);
     $idAdresse = $fournisseur['idAdresse'];
     
-    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET Pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],

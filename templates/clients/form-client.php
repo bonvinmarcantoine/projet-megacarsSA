@@ -25,7 +25,7 @@
 
     <div>
         <label for="dateNaissance">Date de naissance :</label>
-        <input type="date" id="dateNaissance" name="dateNaissance" value="<?php echo isset($client['datenaissance']) ? htmlspecialchars($client['datenaissance']) : ''; ?>" required>
+        <input type="date" id="dateNaissance" name="dateNaissance" value="<?php echo isset($client['dateNaissance']) ? htmlspecialchars($client['dateNaissance']) : ''; ?>" required>
     </div>
 
     <div>
