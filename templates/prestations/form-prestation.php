@@ -16,8 +16,8 @@
     </div>
 
     <div>
-        <label for="idChassis">Numéro de Châssis (VIN - 2 caractères) :</label>
-        <input type="text" id="idChassis" name="idChassis" maxlength="2" value="<?php echo isset($prestation['idChassis']) ? htmlspecialchars($prestation['idChassis']) : ''; ?>" required>
+        <label for="idChassis">Numéro de Châssis (VIN - 17 caractères) :</label>
+        <input type="text" id="idChassis" name="idChassis" maxlength="17" value="<?php echo isset($prestation['idChassis']) ? htmlspecialchars($prestation['idChassis']) : ''; ?>" required>
     </div>
 
     <div>

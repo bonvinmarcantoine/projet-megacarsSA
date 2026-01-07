@@ -93,9 +93,10 @@ taches:
 # add voiture: empecher de saisire moin de 17 caractères
 # voiture: empècher qu'il y ai 2 meme chassi
 # dans tous les forms button annuler
-# dans prestation: le Châssis doit etre 'Numéro de Châssis (VIN - 17 caractères) :'
+# dans prestation: on dois choisir le chassi parmi une liste
+# remplacer les N/A (vide) par ""
 
-tache pour claude:
+taches pour claude:
 # add employer:
 - button add poste
 - button add type de contrat
@@ -108,6 +109,7 @@ tache pour claude:
 - button add Transmission
 - button add État
 - button add Statut
+- vérifier que le chassi ne soi pas déjat utiliser
 
 # add modèle: 
 - button add Type
@@ -116,3 +118,4 @@ tache pour claude:
 # add prestation
 - button add Type
 - button add Statut
+- je veut que je puisse choisir le client et que cela me propose parmi les voitures du client (nom du modèl + chassi)
