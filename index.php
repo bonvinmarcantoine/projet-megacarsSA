@@ -15,14 +15,25 @@ switch ($page) {
 
     case 'ajout_client':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $search = searchClient($pdo, $_POST);
-            if (empty($search)) {
+            $resultNom = searchClientNom($pdo, $_POST);
+            $resultEmail = searchClientEmail($pdo, $_POST);
+            if (!empty($resultNom)) {
+                session_start();
+                $_SESSION['message'] = "erreur dans le nom";
+                header("Location: ?page=error&type=client");
+                exit;
+            }
+            else if (!empty($resultEmail)) {
+                session_start();
+                $_SESSION['message'] = "erreur dans l'email";
+                header("Location: ?page=error&type=client");
+                exit;
+            }
+            else {
                 addClient($pdo, $_POST);
                 header("Location: ?page=clients");
                 exit;
             }
-            $message = $search;
-            header("Location: ?page=error&type=client");
         }
         $mode = 'add';
         $client = []; 
