@@ -70,7 +70,7 @@ projet-megacarsSA/
 │   ├── prestations/
 │   │   ├── form-prestation.php
 │   │   └── list-prestation.php
-│   │
+│   │tr
 │   ├── voitures/
 │   │   ├── form-voiture.php
 │   │   └── list-voiture.php
@@ -83,3 +83,18 @@ projet-megacarsSA/
 ├── index.php                 # Point d’entrée de l’application
 ├── .gitignore
 └── README.md
+
+1) XAMPP Control Panel
+2) http://localhost/phpmyadmin/
+3) http://localhost/mini-app-megacarssa/
+
+taches:
+# addresse: ne pas fair de doublon d'addresses
+# add voiture: empecher de saisire moin de 17 caractères
+# voiture: empécher qu'il y ai 2 meme chassi
+# dans tous les forms button annuler
+
+tache pour claude:
+# add employer:
+- button add poste
+- button add type de contrat

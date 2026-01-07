@@ -64,7 +64,7 @@
 
     <div>
         <label for="tauxActivite">Taux d'Activité (%) :</label>
-        <input type="number" id="tauxActivite" name="tauxActivite" min="0" max="100" value="<?php echo isset($employe['tauxActivité_%']) ? htmlspecialchars($employe['tauxActivité_%']) : ''; ?>" required>
+        <input type="number" id="tauxActivite" name="tauxActivite" min="0" max="100" value="<?php echo isset($employe['tauxActivite']) ? htmlspecialchars($employe['tauxActivite']) : ''; ?>" required>
     </div>
 
     <div>
@@ -79,7 +79,7 @@
 
     <div>
         <label for="pays">Pays (Code - ex: CH) :</label>
-        <input type="text" id="pays" name="pays" maxlength="2" value="<?php echo isset($employe['Pays']) ? htmlspecialchars($employe['Pays']) : ''; ?>" required>
+        <input type="text" id="pays" name="pays" maxlength="2" value="<?php echo isset($employe['pays']) ? htmlspecialchars($employe['pays']) : ''; ?>" required>
     </div>
 
     <div>

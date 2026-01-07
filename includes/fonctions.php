@@ -182,7 +182,7 @@ function addEmploye($pdo, $data) {
     
     $idAdresse = $pdo->lastInsertId();
     
-    $stmt = $pdo->prepare("INSERT INTO Employe (nom, prenom, idPoste, idTypeContrat, idAdresse, dateNaissance, email, telephone, salaireAnnuelle_CHF, commission_CHF, tauxActivité_%, dateEmbauche, DateFinContrat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO Employe (nom, prenom, idPoste, idTypeContrat, idAdresse, dateNaissance, email, telephone, salaireAnnuelle_CHF, commission_CHF, tauxActivite, dateEmbauche, DateFinContrat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -214,7 +214,7 @@ function updateEmploye($pdo, $id, $data) {
         $idAdresse
     ]);
     
-    $stmt = $pdo->prepare("UPDATE Employe SET nom = ?, prenom = ?, idPoste = ?, idTypeContrat = ?, dateNaissance = ?, email = ?, telephone = ?, salaireAnnuelle_CHF = ?, commission_CHF = ?, tauxActivité_% = ?, dateEmbauche = ?, DateFinContrat = ? WHERE idEmploye = ?");
+    $stmt = $pdo->prepare("UPDATE Employe SET nom = ?, prenom = ?, idPoste = ?, idTypeContrat = ?, dateNaissance = ?, email = ?, telephone = ?, salaireAnnuelle_CHF = ?, commission_CHF = ?, tauxActivite = ?, dateEmbauche = ?, DateFinContrat = ? WHERE idEmploye = ?");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],

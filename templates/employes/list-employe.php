@@ -29,7 +29,7 @@
             <td><?= htmlspecialchars($employe['email']) ?></td>
             <td><?= htmlspecialchars($employe['telephone'] ?? 'N/A') ?></td>
             <td><?= number_format($employe['salaireAnnuelle_CHF'], 2) ?> CHF</td>
-            <td><?= htmlspecialchars($employe['tauxActivité_%']) ?>%</td>
+            <td><?= htmlspecialchars($employe['tauxActivite']) ?>%</td>
             <td><?= htmlspecialchars($employe['dateEmbauche']) ?></td>
             <td>
                 <a class="btn-edit" href="?page=modif_employe&id=<?= $employe['idEmploye'] ?>">
