@@ -33,8 +33,8 @@
                     if (!empty($fournisseur['npa']) && !empty($fournisseur['ville'])) {
                         $adresse[] = htmlspecialchars($fournisseur['npa']) . ' ' . htmlspecialchars($fournisseur['ville']);
                     }
-                    if (!empty($fournisseur['Pays'])) {
-                        $adresse[] = htmlspecialchars($fournisseur['Pays']);
+                    if (!empty($fournisseur['pays'])) {
+                        $adresse[] = htmlspecialchars($fournisseur['pays']);
                     }
                     echo implode(', ', $adresse) ?: 'N/A';
                 ?>

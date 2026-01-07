@@ -30,7 +30,7 @@
 
     <div>
         <label for="pays">Pays (Code - ex: CH) :</label>
-        <input type="text" id="pays" name="pays" maxlength="2" value="<?php echo isset($fournisseur['Pays']) ? htmlspecialchars($fournisseur['Pays']) : ''; ?>" required>
+        <input type="text" id="pays" name="pays" maxlength="2" value="<?php echo isset($fournisseur['pays']) ? htmlspecialchars($fournisseur['pays']) : ''; ?>" required>
     </div>
 
     <div>

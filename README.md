@@ -91,10 +91,28 @@ projet-megacarsSA/
 taches:
 # addresse: ne pas fair de doublon d'addresses
 # add voiture: empecher de saisire moin de 17 caractères
-# voiture: empécher qu'il y ai 2 meme chassi
+# voiture: empècher qu'il y ai 2 meme chassi
 # dans tous les forms button annuler
+# dans prestation: le Châssis doit etre 'Numéro de Châssis (VIN - 17 caractères) :'
 
 tache pour claude:
 # add employer:
 - button add poste
 - button add type de contrat
+
+# ajouter la gestion des modeles
+
+# add voiture:
+- button add modèle (formulaire modele et quand tu add sela retourne sur le formulaire voiture)
+- button add Carburant 
+- button add Transmission
+- button add État
+- button add Statut
+
+# add modèle: 
+- button add Type
+- button add Marque
+
+# add prestation
+- button add Type
+- button add Statut

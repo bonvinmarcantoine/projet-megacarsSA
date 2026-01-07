@@ -1,5 +1,6 @@
 <?php
 $page = $_GET['page'] ?? 'accueil';
+echo $page;
 
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/fonctions.php';
@@ -15,8 +16,8 @@ switch ($page) {
 
     case 'ajout_client':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultNom = searchClientNom($pdo, $_POST);
-            $resultEmail = searchClientEmail($pdo, $_POST);
+            $resultNom = searchNom($pdo, $_POST, "Client");
+            $resultEmail = searchEmail($pdo, $_POST, "Client");
             if (!empty($resultNom)) {
                 session_start();
                 $_SESSION['message'] = "erreur dans le nom";
@@ -77,9 +78,25 @@ switch ($page) {
 
     case 'ajout_employe':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            addEmploye($pdo, $_POST);
-            header("Location: ?page=employes");
-            exit;
+            $resultNom = searchNom($pdo, $_POST, "Employe");
+            $resultEmail = searchEmail($pdo, $_POST, "Employe");
+            if (!empty($resultNom)) {
+                session_start();
+                $_SESSION['message'] = "erreur dans le nom";
+                header("Location: ?page=error&type=employe");
+                exit;
+            }
+            else if (!empty($resultEmail)) {
+                session_start();
+                $_SESSION['message'] = "erreur dans l'email";
+                header("Location: ?page=error&type=employe");
+                exit;
+            }
+            else {
+                addEmploye($pdo, $_POST);
+                header("Location: ?page=Employe");
+                exit;
+            }
         }
         $mode = 'add';
         $employe = [];
@@ -179,9 +196,25 @@ switch ($page) {
 
     case 'ajout_fournisseur':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            addFournisseur($pdo, $_POST);
-            header("Location: ?page=fournisseurs");
-            exit;
+            $resultNom = searchNom($pdo, $_POST, "Fournisseur");
+            $resultEmail = searchEmail($pdo, $_POST, "Fournisseur");
+            if (!empty($resultNom)) {
+                session_start();
+                $_SESSION['message'] = "erreur dans le nom";
+                header("Location: ?page=error&type=fournisseur");
+                exit;
+            }
+            else if (!empty($resultEmail)) {
+                session_start();
+                $_SESSION['message'] = "erreur dans l'email";
+                header("Location: ?page=error&type=fournisseur");
+                exit;
+            }
+            else {
+                addFournisseur($pdo, $_POST);
+                header("Location: ?page=fournisseurs");
+                exit;
+            }
         }
         $mode = 'add';
         $fournisseur = [];

@@ -130,19 +130,47 @@ function getAllClientsWithAddress($pdo) {
     return $clients_lower;
 }
 
-function searchClientNom($pdo, $data) {
-    $stmt = $pdo->prepare("SELECT * FROM Client WHERE nom = ? AND prenom = ?");
+function searchNom($pdo, $data, $table) {
+    // Liste des tables autorisées pour éviter les injections SQL
+    $allowedTables = ['Client', 'Fournisseur', 'Employe'];
+
+    if (!in_array($table, $allowedTables)) {
+        throw new Exception("Table non autorisée !");
+    }
+
+    // Pas de quotes simples, mais quotes backtick pour l'identifiant
+    $sql = "SELECT * FROM `$table` WHERE nom = ? AND prenom = ?";
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([
         $data['nom'],
         $data['prenom']
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-function searchClientEmail($pdo, $data) {
-    $stmt = $pdo->prepare("SELECT * FROM Client WHERE email = ?");
+/*function searchEmail($pdo, $data, $table) {
+    $sql = "SELECT * FROM '$table' WHERE email = ?";
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([
         $data['email']
     ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}*/
+
+function searchEmail($pdo, $data, $table) {
+    // Liste des tables autorisées pour éviter les injections SQL
+    $allowedTables = ['Client', 'Fournisseur', 'Employe'];
+
+    if (!in_array($table, $allowedTables)) {
+        throw new Exception("Table non autorisée !");
+    }
+
+    // Pas de quotes simples, mais quotes backtick pour l'identifiant
+    $sql = "SELECT * FROM `$table` WHERE email = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        $data['email']
+    ]);
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 

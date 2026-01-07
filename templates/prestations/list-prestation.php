@@ -8,7 +8,6 @@
 
 <table>
     <tr>
-        <th>ID</th>
         <th>Client</th>
         <th>Châssis</th>
         <th>Type</th>
@@ -23,7 +22,6 @@
 
     <?php foreach ($prestations as $prestation) : ?>
         <tr>
-            <td><?= htmlspecialchars($prestation['idPrestation']) ?></td>
             <td><?= htmlspecialchars(($prestation['client_nom'] ?? '') . ' ' . ($prestation['client_prenom'] ?? '')) ?></td>
             <td><?= htmlspecialchars($prestation['idChassis']) ?></td>
             <td><?= htmlspecialchars($prestation['type_prestation'] ?? 'N/A') ?></td>
