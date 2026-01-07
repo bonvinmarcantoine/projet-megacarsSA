@@ -21,17 +21,25 @@ function getClientById($pdo, $id) {
 }
 
 function addClient($pdo, $data) {
-    // D'abord créer l'adresse
-    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
-    $stmtAdresse->execute([
-        $data['pays'],
-        $data['ville'],
-        $data['npa'],
-        $data['rue'],
-        $data['numero']
-    ]);
     
-    $idAdresse = $pdo->lastInsertId();
+    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+
+    if (empty($resultAdresse)) {
+        $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+        $stmtAdresse->execute([
+            $data['pays'],
+            $data['ville'],
+            $data['npa'],
+            $data['rue'],
+            $data['numero']
+        ]);
+        $idAdresse = $pdo->lastInsertId();
+    }
+    else {
+        $idAdresse = getIdAdresseByRest($pdo, $data);
+    }
+    
+    
     
     // Ensuite créer le client avec l'idAdresse
     $stmt = $pdo->prepare("INSERT INTO client (nom, prenom, idAdresse, entreprise, dateNaissance, nationalite, email, telephone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -90,17 +98,7 @@ function deleteClient($pdo, $id) {
     $stmtAdresse = $pdo->prepare("DELETE FROM Adresse WHERE idAdresse = ?");
     $stmtAdresse->execute([$idAdresse]);
 }
-/*
-function searchByName($pdo, $data) {
-    $stmt = $pdo->prepare("SELECT nom, prenom, email FROM client WHERE nom = ? AND prenom = ? AND email = ?");
-    $stmt->execute([
-        $data['nom'],
-        $data['prenom'],
-        $data['email'],
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-*/
+
 function getClientWithAddress($pdo, $id) {
     $stmt = $pdo->prepare("
         SELECT c.*, a.pays, a.ville, a.npa, a.rue, a.numero 
@@ -130,50 +128,6 @@ function getAllClientsWithAddress($pdo) {
     return $clients_lower;
 }
 
-function searchNom($pdo, $data, $table) {
-    // Liste des tables autorisées pour éviter les injections SQL
-    $allowedTables = ['Client', 'Fournisseur', 'Employe'];
-
-    if (!in_array($table, $allowedTables)) {
-        throw new Exception("Table non autorisée !");
-    }
-
-    // Pas de quotes simples, mais quotes backtick pour l'identifiant
-    $sql = "SELECT * FROM `$table` WHERE nom = ? AND prenom = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $data['nom'],
-        $data['prenom']
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-/*function searchEmail($pdo, $data, $table) {
-    $sql = "SELECT * FROM '$table' WHERE email = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $data['email']
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}*/
-
-function searchEmail($pdo, $data, $table) {
-    // Liste des tables autorisées pour éviter les injections SQL
-    $allowedTables = ['Client', 'Fournisseur', 'Employe'];
-
-    if (!in_array($table, $allowedTables)) {
-        throw new Exception("Table non autorisée !");
-    }
-
-    // Pas de quotes simples, mais quotes backtick pour l'identifiant
-    $sql = "SELECT * FROM `$table` WHERE email = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $data['email']
-    ]);
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 // ==================== EMPLOYES ====================
 function getAllEmployesWithDetails($pdo) {
     $stmt = $pdo->query("
@@ -199,16 +153,22 @@ function getEmployeById($pdo, $id) {
 }
 
 function addEmploye($pdo, $data) {
-    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
-    $stmtAdresse->execute([
-        $data['pays'],
-        $data['ville'],
-        $data['npa'],
-        $data['rue'],
-        $data['numero']
-    ]);
-    
-    $idAdresse = $pdo->lastInsertId();
+    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+
+    if (empty($resultAdresse)) {
+        $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+        $stmtAdresse->execute([
+            $data['pays'],
+            $data['ville'],
+            $data['npa'],
+            $data['rue'],
+            $data['numero']
+        ]);
+        $idAdresse = $pdo->lastInsertId();
+    }
+    else {
+        $idAdresse = getIdAdresseByRest($pdo, $data);
+    }
     
     $stmt = $pdo->prepare("INSERT INTO Employe (nom, prenom, idPoste, idTypeContrat, idAdresse, dateNaissance, email, telephone, salaireAnnuelle_CHF, commission_CHF, tauxActivite, dateEmbauche, DateFinContrat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
@@ -363,16 +323,22 @@ function getFournisseurById($pdo, $id) {
 }
 
 function addFournisseur($pdo, $data) {
-    $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
-    $stmtAdresse->execute([
-        $data['pays'],
-        $data['ville'],
-        $data['npa'],
-        $data['rue'],
-        $data['numero']
-    ]);
-    
-    $idAdresse = $pdo->lastInsertId();
+    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+
+    if (empty($resultAdresse)) {
+        $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+        $stmtAdresse->execute([
+            $data['pays'],
+            $data['ville'],
+            $data['npa'],
+            $data['rue'],
+            $data['numero']
+        ]);
+        $idAdresse = $pdo->lastInsertId();
+    }
+    else {
+        $idAdresse = getIdAdresseByRest($pdo, $data);
+    }
     
     $stmt = $pdo->prepare("INSERT INTO Fournisseur (nom, prenom, idAdresse, entreprise, telephone, email) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([
@@ -529,5 +495,50 @@ function getAllTypePrestations($pdo) {
 
 function getAllStatutPrestations($pdo) {
     $stmt = $pdo->query("SELECT * FROM StatutPrestation ORDER BY statut");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// ==================== ADRESSE ====================
+
+function countadresse($pdo, $id) {
+    $sql = "
+        SELECT
+            (SELECT COUNT(*) FROM fournisseur WHERE idAdresse = ?) +
+            (SELECT COUNT(*) FROM employe WHERE idAdresse = ?) +
+            (SELECT COUNT(*) FROM client WHERE idAdresse = ?)
+        AS total_lignes";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id, $id, $id]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['total_lignes'];
+}
+
+function getIdAdresseByRest($pdo, $data) {
+    $sql = "SELECT idAdresse as id FROM Adresse WHERE pays = ? AND ville = ? AND npa = ? AND rue = ? AND numero = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$data["pays"], $data["ville"], $data["npa"], $data["rue"], $data["numero"]]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result['id'];
+}
+
+// ==================== General ====================
+function VerifierUnique($pdo, $data, $table, $champs) {
+    
+    $sql = "SELECT * FROM `$table` WHERE";
+    $valeurs = [];
+
+    foreach ($champs as $index => $element) {
+        if ($index > 0) {
+            $sql .= " AND";
+        }
+        
+        $sql .= " $element = ?";
+        $valeurs[] = $data[$element];
+    }
+    $sql .= ";";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute($valeurs);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

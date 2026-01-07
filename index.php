@@ -16,8 +16,8 @@ switch ($page) {
 
     case 'ajout_client':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultNom = searchNom($pdo, $_POST, "Client");
-            $resultEmail = searchEmail($pdo, $_POST, "Client");
+            $resultNom = VerifierUnique($pdo, $_POST, "Client", ["nom", "prenom"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "Client", ["email"]);
             if (!empty($resultNom)) {
                 session_start();
                 $_SESSION['message'] = "erreur dans le nom";
@@ -78,8 +78,8 @@ switch ($page) {
 
     case 'ajout_employe':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultNom = searchNom($pdo, $_POST, "Employe");
-            $resultEmail = searchEmail($pdo, $_POST, "Employe");
+            $resultEmail = VerifierUnique($pdo, $_POST, "Employe", ["nom", "prenom"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "Employe", ["email"]);
             if (!empty($resultNom)) {
                 session_start();
                 $_SESSION['message'] = "erreur dans le nom";
@@ -196,8 +196,8 @@ switch ($page) {
 
     case 'ajout_fournisseur':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultNom = searchNom($pdo, $_POST, "Fournisseur");
-            $resultEmail = searchEmail($pdo, $_POST, "Fournisseur");
+            $resultEmail = VerifierUnique($pdo, $_POST, "Fournisseur", ["nom", "prenom"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "Fournisseur", ["email"]);
             if (!empty($resultNom)) {
                 session_start();
                 $_SESSION['message'] = "erreur dans le nom";

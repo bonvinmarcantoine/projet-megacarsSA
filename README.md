@@ -91,9 +91,8 @@ projet-megacarsSA/
 taches:
 # addresse: ne pas fair de doublon d'addresses
 # add voiture: empecher de saisire moin de 17 caractères
-# voiture: empècher qu'il y ai 2 meme chassi
-# dans tous les forms button annuler
-# dans prestation: on dois choisir le chassi parmi une liste
+# voiture: empècher qu'il y ai 2 meme chassi -> page d'erreur
+# dans tous les forms: button annuler
 # remplacer les N/A (vide) par ""
 
 taches pour claude:
