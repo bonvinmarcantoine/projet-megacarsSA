@@ -1,6 +1,5 @@
 <?php
 $page = $_GET['page'] ?? 'accueil';
-echo $page;
 
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/fonctions.php';
@@ -18,15 +17,16 @@ switch ($page) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $resultNom = VerifierUnique($pdo, $_POST, "Client", ["nom", "prenom"]);
             $resultEmail = VerifierUnique($pdo, $_POST, "Client", ["email"]);
+
             if (!empty($resultNom)) {
                 session_start();
-                $_SESSION['message'] = "erreur dans le nom";
+                $_SESSION['message'] = $resultNom;
                 header("Location: ?page=error&type=client");
                 exit;
             }
             else if (!empty($resultEmail)) {
                 session_start();
-                $_SESSION['message'] = "erreur dans l'email";
+                $_SESSION['message'] = $resultEmail;
                 header("Location: ?page=error&type=client");
                 exit;
             }

@@ -3,12 +3,11 @@
 </h2>
 
 <form class="form-client" method="POST" action="">
-    <?php if ($mode === 'add'): ?>
     <div>
-        <label for="idChassis">Numéro de Châssis (VIN - 17 caractères) :</label>
-        <input type="text" id="idChassis" name="idChassis" maxlength="17" value="<?php echo isset($voiture['idChassis']) ? htmlspecialchars($voiture['idChassis']) : ''; ?>" required>
+        <label for="chassis">Numéro de Châssis (VIN - 17 caractères) :</label>
+        <input type="text" id="chassis" name="chassis" maxlength="17" value="<?php echo isset($voiture['chassis']) ? htmlspecialchars($voiture['chassis']) : ''; ?>" required>
+        
     </div>
-    <?php endif; ?>
 
     <div>
         <label for="idModele">Modèle :</label>
@@ -84,7 +83,7 @@
 
     <div>
         <label for="kilometrage">Kilométrage :</label>
-        <input type="number" step="0.01" id="kilometrage" name="kilometrage" value="<?php echo isset($voiture['kilométrage']) ? htmlspecialchars($voiture['kilométrage']) : ''; ?>" required>
+        <input type="number" step="0.01" id="kilometrage" name="kilometrage" value="<?php echo isset($voiture['kilometrage']) ? htmlspecialchars($voiture['kilometrage']) : ''; ?>" required>
     </div>
 
     <div>

@@ -2,7 +2,7 @@
 
 // ==================== CLIENTS ====================
 function getClient($pdo) {
-    $stmt = $pdo->query("SELECT * FROM client ORDER BY nom");
+    $stmt = $pdo->query("SELECT * FROM client ORDER BY nom ASC, prenom ASC");
     $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Convertir toutes les clés en minuscules pour uniformité
@@ -56,20 +56,43 @@ function addClient($pdo, $data) {
 }
 
 function updateClient($pdo, $id, $data) {
-    // Récupérer l'idAdresse du client
     $client = getClientById($pdo, $id);
     $idAdresse = $client['idAdresse'];
-    
-    // Mettre à jour l'adresse
-    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
-    $stmtAdresse->execute([
-        $data['pays'],
-        $data['ville'],
-        $data['npa'],
-        $data['rue'],
-        $data['numero'],
-        $idAdresse
-    ]);
+    # ancien : $client
+    # nouveaux : $data
+
+    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+
+    if (empty($resultAdresse)) {
+        # on regarde si il y as des autres qui on l'anciène addresse ($idAdresse)
+            # si oui on créé une nouvelle adresse et on prend l'id
+            # si non on modiffie l'adresse ($idAdresse)
+        if (countAdresse($pdo, $idAdresse) > 1) {
+            $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+            $stmtAdresse->execute([
+                $data['pays'],
+                $data['ville'],
+                $data['npa'],
+                $data['rue'],
+                $data['numero']
+            ]);
+            $data["idAdresse"] = $pdo->lastInsertId();
+        }
+        else {
+            $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+            $stmtAdresse->execute([
+                $data['pays'],
+                $data['ville'],
+                $data['npa'],
+                $data['rue'],
+                $data['numero'],
+                $idAdresse 
+            ]);
+        }
+    }
+    else {
+        $data["idAdresse"] = getIdAdresseByRest($pdo, $data);
+    }
     
     // Mettre à jour le client
     $stmt = $pdo->prepare("UPDATE client SET nom = ?, prenom = ?, entreprise = ?, dateNaissance = ?, nationalite = ?, email = ?, telephone = ? WHERE idClient = ?");
@@ -83,6 +106,11 @@ function updateClient($pdo, $id, $data) {
         $data['telephone'],
         $id
     ]);
+
+    if (countAdresse($pdo, $idAdresse) === 0) {
+        $stmt = $pdo->prepare("DELETE FROM adresse WHERE idAdresse = ?");
+        $stmt->execute([$idAdresse]);
+    }
 }
 
 function deleteClient($pdo, $id) {
@@ -115,7 +143,7 @@ function getAllClientsWithAddress($pdo) {
         SELECT c.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Client c 
         LEFT JOIN Adresse a ON c.idAdresse = a.idAdresse 
-        ORDER BY c.nom
+        ORDER BY c.idClient desc
     ");
     $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -136,7 +164,7 @@ function getAllEmployesWithDetails($pdo) {
         LEFT JOIN Poste p ON e.idPoste = p.idPoste
         LEFT JOIN TypeContrat tc ON e.idTypeContrat = tc.idTypeContrat
         LEFT JOIN Adresse a ON e.idAdresse = a.idAdresse
-        ORDER BY e.nom
+        ORDER BY e.idEmploye desc
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -244,7 +272,7 @@ function getAllVoituresWithDetails($pdo) {
         LEFT JOIN Transmission t ON v.idTransmission = t.idTransmission
         LEFT JOIN EtatVoiture ev ON v.idEtatVoiture = ev.idEtatVoiture
         LEFT JOIN StatutVoiture sv ON v.idStatutVoiture = sv.idStatutVoiture
-        ORDER BY ma.marque, mo.modele
+        ORDER BY v.idVoiture desc
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -255,16 +283,16 @@ function getVoitureById($pdo, $id) {
         FROM Voiture v
         LEFT JOIN Modele mo ON v.idModele = mo.idModele
         LEFT JOIN Marque ma ON mo.idMarque = ma.idMarque
-        WHERE v.idChassis = ?
+        WHERE v.idVoiture = ?
     ");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function addVoiture($pdo, $data) {
-    $stmt = $pdo->prepare("INSERT INTO Voiture (idChassis, idModele, idClient, idCarburant, idTransmission, idEtatVoiture, idStatutVoiture, kilométrage, valeurCHF, finGarantie, datePremiereCirculation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO Voiture (chassis, idModele, idClient, idCarburant, idTransmission, idEtatVoiture, idStatutVoiture, kilometrage, valeurCHF, finGarantie, datePremiereCirculation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
-        $data['idChassis'],
+        $data['chassis'],
         $data['idModele'],
         $data['idClient'],
         $data['idCarburant'],
@@ -279,8 +307,9 @@ function addVoiture($pdo, $data) {
 }
 
 function updateVoiture($pdo, $id, $data) {
-    $stmt = $pdo->prepare("UPDATE Voiture SET idModele = ?, idClient = ?, idCarburant = ?, idTransmission = ?, idEtatVoiture = ?, idStatutVoiture = ?, kilométrage = ?, valeurCHF = ?, finGarantie = ?, datePremiereCirculation = ? WHERE idChassis = ?");
+    $stmt = $pdo->prepare("UPDATE Voiture SET chassis = ? idModele = ?, idClient = ?, idCarburant = ?, idTransmission = ?, idEtatVoiture = ?, idStatutVoiture = ?, kilometrage = ?, valeurCHF = ?, finGarantie = ?, datePremiereCirculation = ? WHERE idVoiture = ?");
     $stmt->execute([
+        $data['chassis'],
         $data['idModele'],
         $data['idClient'],
         $data['idCarburant'],
@@ -296,7 +325,7 @@ function updateVoiture($pdo, $id, $data) {
 }
 
 function deleteVoiture($pdo, $id) {
-    $stmt = $pdo->prepare("DELETE FROM Voiture WHERE idChassis = ?");
+    $stmt = $pdo->prepare("DELETE FROM Voiture WHERE idVoiture = ?");
     $stmt->execute([$id]);
 }
 
@@ -306,7 +335,7 @@ function getAllFournisseursWithAddress($pdo) {
         SELECT f.*, a.pays, a.ville, a.npa, a.rue, a.numero 
         FROM Fournisseur f
         LEFT JOIN Adresse a ON f.idAdresse = a.idAdresse
-        ORDER BY f.nom
+        ORDER BY f.idFournisseur desc
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -408,10 +437,10 @@ function getPrestationById($pdo, $id) {
 }
 
 function addPrestation($pdo, $data) {
-    $stmt = $pdo->prepare("INSERT INTO Prestation (idClient, idChassis, idStatutPrestation, idTypePrestation, description, dateDebut, dateFinPrevue, dateFin, tempPasseHeure, note, avis) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO Prestation (idClient, idVoiture, idStatutPrestation, idTypePrestation, description, dateDebut, dateFinPrevue, dateFin, tempPasseHeure, note, avis) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['idClient'],
-        $data['idChassis'],
+        $data['idVoiture'],
         $data['idStatutPrestation'],
         $data['idTypePrestation'],
         $data['description'] ?? null,
@@ -425,10 +454,10 @@ function addPrestation($pdo, $data) {
 }
 
 function updatePrestation($pdo, $id, $data) {
-    $stmt = $pdo->prepare("UPDATE Prestation SET idClient = ?, idChassis = ?, idStatutPrestation = ?, idTypePrestation = ?, description = ?, dateDebut = ?, dateFinPrevue = ?, dateFin = ?, tempPasseHeure = ?, note = ?, avis = ? WHERE idPrestation = ?");
+    $stmt = $pdo->prepare("UPDATE Prestation SET idClient = ?, idVoiture = ?, idStatutPrestation = ?, idTypePrestation = ?, description = ?, dateDebut = ?, dateFinPrevue = ?, dateFin = ?, tempPasseHeure = ?, note = ?, avis = ? WHERE idPrestation = ?");
     $stmt->execute([
         $data['idClient'],
-        $data['idChassis'],
+        $data['idVoiture'],
         $data['idStatutPrestation'],
         $data['idTypePrestation'],
         $data['description'] ?? null,
@@ -500,7 +529,7 @@ function getAllStatutPrestations($pdo) {
 
 // ==================== ADRESSE ====================
 
-function countadresse($pdo, $id) {
+function countAdresse($pdo, $id) {
     $sql = "
         SELECT
             (SELECT COUNT(*) FROM fournisseur WHERE idAdresse = ?) +
