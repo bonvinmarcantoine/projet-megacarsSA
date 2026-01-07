@@ -58,15 +58,10 @@ function addClient($pdo, $data) {
 function updateClient($pdo, $id, $data) {
     $client = getClientById($pdo, $id);
     $idAdresse = $client['idAdresse'];
-    # ancien : $client
-    # nouveaux : $data
 
     $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
 
     if (empty($resultAdresse)) {
-        # on regarde si il y as des autres qui on l'anciène addresse ($idAdresse)
-            # si oui on créé une nouvelle adresse et on prend l'id
-            # si non on modiffie l'adresse ($idAdresse)
         if (countAdresse($pdo, $idAdresse) > 1) {
             $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
             $stmtAdresse->execute([
@@ -88,14 +83,14 @@ function updateClient($pdo, $id, $data) {
                 $data['numero'],
                 $idAdresse 
             ]);
+            $data["idAdresse"] = $idAdresse;
         }
     }
     else {
         $data["idAdresse"] = getIdAdresseByRest($pdo, $data);
     }
     
-    // Mettre à jour le client
-    $stmt = $pdo->prepare("UPDATE client SET nom = ?, prenom = ?, entreprise = ?, dateNaissance = ?, nationalite = ?, email = ?, telephone = ? WHERE idClient = ?");
+    $stmt = $pdo->prepare("UPDATE client SET nom = ?, prenom = ?, entreprise = ?, dateNaissance = ?, nationalite = ?, email = ?, telephone = ?, idAdresse = ? WHERE idClient = ?");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -104,6 +99,7 @@ function updateClient($pdo, $id, $data) {
         $data['nationalite'],
         $data['email'],
         $data['telephone'],
+        $data['idAdresse'],
         $id
     ]);
 
