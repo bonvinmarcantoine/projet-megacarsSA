@@ -89,11 +89,7 @@ projet-megacarsSA/
 3) http://localhost/mini-app-megacarssa/
 
 taches:
-# addresse: ne pas fair de doublon d'addresses
-# add voiture: empecher de saisire moin de 17 caractères
-# voiture: empècher qu'il y ai 2 meme chassi -> page d'erreur
-# dans tous les forms: button annuler
-# remplacer les N/A (vide) par ""
+# addresse: 
 
 taches pour claude:
 # add employer:
