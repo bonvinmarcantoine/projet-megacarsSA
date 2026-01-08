@@ -15,17 +15,17 @@ function getClient($pdo) {
 }
 
 function getClientById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT * FROM Client WHERE idClient = ?");
+    $stmt = $pdo->prepare("SELECT * FROM client WHERE idClient = ?");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function addClient($pdo, $data) {
     
-    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+    $resultAdresse = VerifierUnique($pdo, $data, "adresse", ["pays", "ville", "npa", "rue", "numero"]);
 
     if (empty($resultAdresse)) {
-        $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+        $stmtAdresse = $pdo->prepare("INSERT INTO adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
         $stmtAdresse->execute([
             $data['pays'],
             $data['ville'],
@@ -59,11 +59,11 @@ function updateClient($pdo, $id, $data) {
     $client = getClientById($pdo, $id);
     $idAdresse = $client['idAdresse'];
 
-    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+    $resultAdresse = VerifierUnique($pdo, $data, "adresse", ["pays", "ville", "npa", "rue", "numero"]);
 
     if (empty($resultAdresse)) {
         if (countAdresse($pdo, $idAdresse) > 1) {
-            $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+            $stmtAdresse = $pdo->prepare("INSERT INTO adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
             $stmtAdresse->execute([
                 $data['pays'],
                 $data['ville'],
@@ -74,7 +74,7 @@ function updateClient($pdo, $id, $data) {
             $data["idAdresse"] = $pdo->lastInsertId();
         }
         else {
-            $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+            $stmtAdresse = $pdo->prepare("UPDATE adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
             $stmtAdresse->execute([
                 $data['pays'],
                 $data['ville'],
@@ -115,19 +115,19 @@ function deleteClient($pdo, $id) {
     $idAdresse = $client['idAdresse'];
     
     // Supprimer le client
-    $stmt = $pdo->prepare("DELETE FROM Client WHERE idClient = ?");
+    $stmt = $pdo->prepare("DELETE FROM client WHERE idClient = ?");
     $stmt->execute([$id]);
     
     // Supprimer l'adresse associée
-    $stmtAdresse = $pdo->prepare("DELETE FROM Adresse WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("DELETE FROM adresse WHERE idAdresse = ?");
     $stmtAdresse->execute([$idAdresse]);
 }
 
 function getClientWithAddress($pdo, $id) {
     $stmt = $pdo->prepare("
         SELECT c.*, a.pays, a.ville, a.npa, a.rue, a.numero 
-        FROM Client c 
-        LEFT JOIN Adresse a ON c.idAdresse = a.idAdresse 
+        FROM client c 
+        LEFT JOIN adresse a ON c.idAdresse = a.idAdresse 
         WHERE c.idClient = ?
     ");
     $stmt->execute([$id]);
@@ -137,8 +137,8 @@ function getClientWithAddress($pdo, $id) {
 function getAllClientsWithAddress($pdo) {
     $stmt = $pdo->query("
         SELECT c.*, a.pays, a.ville, a.npa, a.rue, a.numero 
-        FROM Client c 
-        LEFT JOIN Adresse a ON c.idAdresse = a.idAdresse 
+        FROM client c 
+        LEFT JOIN adresse a ON c.idAdresse = a.idAdresse 
         ORDER BY c.idClient desc
     ");
     $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -156,10 +156,10 @@ function getAllClientsWithAddress($pdo) {
 function getAllEmployesWithDetails($pdo) {
     $stmt = $pdo->query("
         SELECT e.*, p.poste, tc.contrat, a.pays, a.ville, a.npa, a.rue, a.numero 
-        FROM Employe e
-        LEFT JOIN Poste p ON e.idPoste = p.idPoste
-        LEFT JOIN TypeContrat tc ON e.idTypeContrat = tc.idTypeContrat
-        LEFT JOIN Adresse a ON e.idAdresse = a.idAdresse
+        FROM employe e
+        LEFT JOIN poste p ON e.idPoste = p.idPoste
+        LEFT JOIN typecontrat tc ON e.idTypeContrat = tc.idTypeContrat
+        LEFT JOIN adresse a ON e.idAdresse = a.idAdresse
         ORDER BY e.idEmploye desc
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -168,8 +168,8 @@ function getAllEmployesWithDetails($pdo) {
 function getEmployeById($pdo, $id) {
     $stmt = $pdo->prepare("
         SELECT e.*, a.pays, a.ville, a.npa, a.rue, a.numero 
-        FROM Employe e
-        LEFT JOIN Adresse a ON e.idAdresse = a.idAdresse
+        FROM employe e
+        LEFT JOIN adresse a ON e.idAdresse = a.idAdresse
         WHERE e.idEmploye = ?
     ");
     $stmt->execute([$id]);
@@ -177,10 +177,10 @@ function getEmployeById($pdo, $id) {
 }
 
 function addEmploye($pdo, $data) {
-    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+    $resultAdresse = VerifierUnique($pdo, $data, "adresse", ["pays", "ville", "npa", "rue", "numero"]);
 
     if (empty($resultAdresse)) {
-        $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+        $stmtAdresse = $pdo->prepare("INSERT INTO adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
         $stmtAdresse->execute([
             $data['pays'],
             $data['ville'],
@@ -194,7 +194,7 @@ function addEmploye($pdo, $data) {
         $idAdresse = getIdAdresseByRest($pdo, $data);
     }
     
-    $stmt = $pdo->prepare("INSERT INTO Employe (nom, prenom, idPoste, idTypeContrat, idAdresse, dateNaissance, email, telephone, salaireAnnuelle_CHF, commission_CHF, tauxActivite, dateEmbauche, DateFinContrat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO employe (nom, prenom, idPoste, idTypeContrat, idAdresse, dateNaissance, email, telephone, salaireAnnuelle_CHF, commission_CHF, tauxActivite, dateEmbauche, DateFinContrat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -216,7 +216,7 @@ function updateEmploye($pdo, $id, $data) {
     $employe = getEmployeById($pdo, $id);
     $idAdresse = $employe['idAdresse'];
     
-    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("UPDATE adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -226,7 +226,7 @@ function updateEmploye($pdo, $id, $data) {
         $idAdresse
     ]);
     
-    $stmt = $pdo->prepare("UPDATE Employe SET nom = ?, prenom = ?, idPoste = ?, idTypeContrat = ?, dateNaissance = ?, email = ?, telephone = ?, salaireAnnuelle_CHF = ?, commission_CHF = ?, tauxActivite = ?, dateEmbauche = ?, DateFinContrat = ? WHERE idEmploye = ?");
+    $stmt = $pdo->prepare("UPDATE employe SET nom = ?, prenom = ?, idPoste = ?, idTypeContrat = ?, dateNaissance = ?, email = ?, telephone = ?, salaireAnnuelle_CHF = ?, commission_CHF = ?, tauxActivite = ?, dateEmbauche = ?, DateFinContrat = ? WHERE idEmploye = ?");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -248,10 +248,10 @@ function deleteEmploye($pdo, $id) {
     $employe = getEmployeById($pdo, $id);
     $idAdresse = $employe['idAdresse'];
     
-    $stmt = $pdo->prepare("DELETE FROM Employe WHERE idEmploye = ?");
+    $stmt = $pdo->prepare("DELETE FROM employe WHERE idEmploye = ?");
     $stmt->execute([$id]);
     
-    $stmtAdresse = $pdo->prepare("DELETE FROM Adresse WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("DELETE FROM adresse WHERE idAdresse = ?");
     $stmtAdresse->execute([$idAdresse]);
 }
 
@@ -260,14 +260,14 @@ function getAllVoituresWithDetails($pdo) {
     $stmt = $pdo->query("
         SELECT v.*, mo.modele, ma.marque, c.nom as client_nom, c.prenom as client_prenom,
                ca.carburant, t.type as transmission, ev.etat, sv.statut
-        FROM Voiture v
-        LEFT JOIN Modele mo ON v.idModele = mo.idModele
-        LEFT JOIN Marque ma ON mo.idMarque = ma.idMarque
-        LEFT JOIN Client c ON v.idClient = c.idClient
-        LEFT JOIN Carburant ca ON v.idCarburant = ca.idCarburant
-        LEFT JOIN Transmission t ON v.idTransmission = t.idTransmission
-        LEFT JOIN EtatVoiture ev ON v.idEtatVoiture = ev.idEtatVoiture
-        LEFT JOIN StatutVoiture sv ON v.idStatutVoiture = sv.idStatutVoiture
+        FROM voiture v
+        LEFT JOIN modele mo ON v.idModele = mo.idModele
+        LEFT JOIN marque ma ON mo.idMarque = ma.idMarque
+        LEFT JOIN client c ON v.idClient = c.idClient
+        LEFT JOIN carburant ca ON v.idCarburant = ca.idCarburant
+        LEFT JOIN transmission t ON v.idTransmission = t.idTransmission
+        LEFT JOIN etatvoiture ev ON v.idEtatVoiture = ev.idEtatVoiture
+        LEFT JOIN statutvoiture sv ON v.idStatutVoiture = sv.idStatutVoiture
         ORDER BY v.idVoiture desc
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -276,9 +276,9 @@ function getAllVoituresWithDetails($pdo) {
 function getVoitureById($pdo, $id) {
     $stmt = $pdo->prepare("
         SELECT v.*, mo.modele, ma.marque
-        FROM Voiture v
-        LEFT JOIN Modele mo ON v.idModele = mo.idModele
-        LEFT JOIN Marque ma ON mo.idMarque = ma.idMarque
+        FROM voiture v
+        LEFT JOIN modele mo ON v.idModele = mo.idModele
+        LEFT JOIN marque ma ON mo.idMarque = ma.idMarque
         WHERE v.idVoiture = ?
     ");
     $stmt->execute([$id]);
@@ -286,7 +286,7 @@ function getVoitureById($pdo, $id) {
 }
 
 function addVoiture($pdo, $data) {
-    $stmt = $pdo->prepare("INSERT INTO Voiture (chassis, idModele, idClient, idCarburant, idTransmission, idEtatVoiture, idStatutVoiture, kilometrage, valeurCHF, finGarantie, datePremiereCirculation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO voiture (chassis, idModele, idClient, idCarburant, idTransmission, idEtatVoiture, idStatutVoiture, kilometrage, valeurCHF, finGarantie, datePremiereCirculation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['chassis'],
         $data['idModele'],
@@ -303,7 +303,7 @@ function addVoiture($pdo, $data) {
 }
 
 function updateVoiture($pdo, $id, $data) {
-    $stmt = $pdo->prepare("UPDATE Voiture SET chassis = ? idModele = ?, idClient = ?, idCarburant = ?, idTransmission = ?, idEtatVoiture = ?, idStatutVoiture = ?, kilometrage = ?, valeurCHF = ?, finGarantie = ?, datePremiereCirculation = ? WHERE idVoiture = ?");
+    $stmt = $pdo->prepare("UPDATE voiture SET chassis = ? idModele = ?, idClient = ?, idCarburant = ?, idTransmission = ?, idEtatVoiture = ?, idStatutVoiture = ?, kilometrage = ?, valeurCHF = ?, finGarantie = ?, datePremiereCirculation = ? WHERE idVoiture = ?");
     $stmt->execute([
         $data['chassis'],
         $data['idModele'],
@@ -321,7 +321,7 @@ function updateVoiture($pdo, $id, $data) {
 }
 
 function deleteVoiture($pdo, $id) {
-    $stmt = $pdo->prepare("DELETE FROM Voiture WHERE idVoiture = ?");
+    $stmt = $pdo->prepare("DELETE FROM voiture WHERE idVoiture = ?");
     $stmt->execute([$id]);
 }
 
@@ -329,8 +329,8 @@ function deleteVoiture($pdo, $id) {
 function getAllFournisseursWithAddress($pdo) {
     $stmt = $pdo->query("
         SELECT f.*, a.pays, a.ville, a.npa, a.rue, a.numero 
-        FROM Fournisseur f
-        LEFT JOIN Adresse a ON f.idAdresse = a.idAdresse
+        FROM fournisseur f
+        LEFT JOIN adresse a ON f.idAdresse = a.idAdresse
         ORDER BY f.idFournisseur desc
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -339,8 +339,8 @@ function getAllFournisseursWithAddress($pdo) {
 function getFournisseurById($pdo, $id) {
     $stmt = $pdo->prepare("
         SELECT f.*, a.pays, a.ville, a.npa, a.rue, a.numero 
-        FROM Fournisseur f
-        LEFT JOIN Adresse a ON f.idAdresse = a.idAdresse
+        FROM fournisseur f
+        LEFT JOIN adresse a ON f.idAdresse = a.idAdresse
         WHERE f.idFournisseur = ?
     ");
     $stmt->execute([$id]);
@@ -348,10 +348,10 @@ function getFournisseurById($pdo, $id) {
 }
 
 function addFournisseur($pdo, $data) {
-    $resultAdresse = VerifierUnique($pdo, $data, "Adresse", ["pays", "ville", "npa", "rue", "numero"]);
+    $resultAdresse = VerifierUnique($pdo, $data, "adresse", ["pays", "ville", "npa", "rue", "numero"]);
 
     if (empty($resultAdresse)) {
-        $stmtAdresse = $pdo->prepare("INSERT INTO Adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
+        $stmtAdresse = $pdo->prepare("INSERT INTO adresse (pays, ville, npa, rue, numero) VALUES (?, ?, ?, ?, ?)");
         $stmtAdresse->execute([
             $data['pays'],
             $data['ville'],
@@ -365,7 +365,7 @@ function addFournisseur($pdo, $data) {
         $idAdresse = getIdAdresseByRest($pdo, $data);
     }
     
-    $stmt = $pdo->prepare("INSERT INTO Fournisseur (nom, prenom, idAdresse, entreprise, telephone, email) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO fournisseur (nom, prenom, idAdresse, entreprise, telephone, email) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -380,7 +380,7 @@ function updateFournisseur($pdo, $id, $data) {
     $fournisseur = getFournisseurById($pdo, $id);
     $idAdresse = $fournisseur['idAdresse'];
     
-    $stmtAdresse = $pdo->prepare("UPDATE Adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("UPDATE adresse SET pays = ?, ville = ?, npa = ?, rue = ?, numero = ? WHERE idAdresse = ?");
     $stmtAdresse->execute([
         $data['pays'],
         $data['ville'],
@@ -390,7 +390,7 @@ function updateFournisseur($pdo, $id, $data) {
         $idAdresse
     ]);
     
-    $stmt = $pdo->prepare("UPDATE Fournisseur SET nom = ?, prenom = ?, entreprise = ?, telephone = ?, email = ? WHERE idFournisseur = ?");
+    $stmt = $pdo->prepare("UPDATE fournisseur SET nom = ?, prenom = ?, entreprise = ?, telephone = ?, email = ? WHERE idFournisseur = ?");
     $stmt->execute([
         $data['nom'],
         $data['prenom'],
@@ -405,10 +405,10 @@ function deleteFournisseur($pdo, $id) {
     $fournisseur = getFournisseurById($pdo, $id);
     $idAdresse = $fournisseur['idAdresse'];
     
-    $stmt = $pdo->prepare("DELETE FROM Fournisseur WHERE idFournisseur = ?");
+    $stmt = $pdo->prepare("DELETE FROM fournisseur WHERE idFournisseur = ?");
     $stmt->execute([$id]);
     
-    $stmtAdresse = $pdo->prepare("DELETE FROM Adresse WHERE idAdresse = ?");
+    $stmtAdresse = $pdo->prepare("DELETE FROM adresse WHERE idAdresse = ?");
     $stmtAdresse->execute([$idAdresse]);
 }
 
@@ -417,23 +417,23 @@ function getAllPrestationsWithDetails($pdo) {
     $stmt = $pdo->query("
         SELECT p.*, c.nom as client_nom, c.prenom as client_prenom,
                tp.type as type_prestation, sp.statut as statut_prestation
-        FROM Prestation p
-        LEFT JOIN Client c ON p.idClient = c.idClient
-        LEFT JOIN TypePrestation tp ON p.idTypePrestation = tp.idTypePrestation
-        LEFT JOIN StatutPrestation sp ON p.idStatutPrestation = sp.idStatutPrestation
+        FROM prestation p
+        LEFT JOIN client c ON p.idClient = c.idClient
+        LEFT JOIN typeprestation tp ON p.idTypePrestation = tp.idTypePrestation
+        LEFT JOIN statutprestation sp ON p.idStatutPrestation = sp.idStatutPrestation
         ORDER BY p.dateDebut DESC
     ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getPrestationById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT * FROM Prestation WHERE idPrestation = ?");
+    $stmt = $pdo->prepare("SELECT * FROM prestation WHERE idPrestation = ?");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function addPrestation($pdo, $data) {
-    $stmt = $pdo->prepare("INSERT INTO Prestation (idClient, idVoiture, idStatutPrestation, idTypePrestation, description, dateDebut, dateFinPrevue, dateFin, tempPasseHeure, note, avis) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO prestation (idClient, idVoiture, idStatutPrestation, idTypePrestation, description, dateDebut, dateFinPrevue, dateFin, tempPasseHeure, note, avis) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['idClient'],
         $data['idVoiture'],
@@ -450,7 +450,7 @@ function addPrestation($pdo, $data) {
 }
 
 function updatePrestation($pdo, $id, $data) {
-    $stmt = $pdo->prepare("UPDATE Prestation SET idClient = ?, idVoiture = ?, idStatutPrestation = ?, idTypePrestation = ?, description = ?, dateDebut = ?, dateFinPrevue = ?, dateFin = ?, tempPasseHeure = ?, note = ?, avis = ? WHERE idPrestation = ?");
+    $stmt = $pdo->prepare("UPDATE prestation SET idClient = ?, idVoiture = ?, idStatutPrestation = ?, idTypePrestation = ?, description = ?, dateDebut = ?, dateFinPrevue = ?, dateFin = ?, tempPasseHeure = ?, note = ?, avis = ? WHERE idPrestation = ?");
     $stmt->execute([
         $data['idClient'],
         $data['idVoiture'],
@@ -468,58 +468,58 @@ function updatePrestation($pdo, $id, $data) {
 }
 
 function deletePrestation($pdo, $id) {
-    $stmt = $pdo->prepare("DELETE FROM Prestation WHERE idPrestation = ?");
+    $stmt = $pdo->prepare("DELETE FROM prestation WHERE idPrestation = ?");
     $stmt->execute([$id]);
 }
 
 // ==================== FONCTIONS UTILITAIRES ====================
 function getAllPostes($pdo) {
-    $stmt = $pdo->query("SELECT * FROM Poste ORDER BY poste");
+    $stmt = $pdo->query("SELECT * FROM poste ORDER BY poste");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllTypeContrats($pdo) {
-    $stmt = $pdo->query("SELECT * FROM TypeContrat ORDER BY contrat");
+    $stmt = $pdo->query("SELECT * FROM typecontrat ORDER BY contrat");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllModeles($pdo) {
-    $stmt = $pdo->query("SELECT m.*, ma.marque FROM Modele m LEFT JOIN Marque ma ON m.idMarque = ma.idMarque ORDER BY ma.marque, m.modele");
+    $stmt = $pdo->query("SELECT m.*, ma.marque FROM modele m LEFT JOIN marque ma ON m.idMarque = ma.idMarque ORDER BY ma.marque, m.modele");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllClients($pdo) {
-    $stmt = $pdo->query("SELECT idClient, nom, prenom FROM Client ORDER BY nom, prenom");
+    $stmt = $pdo->query("SELECT idClient, nom, prenom FROM client ORDER BY nom, prenom");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllCarburants($pdo) {
-    $stmt = $pdo->query("SELECT * FROM Carburant ORDER BY carburant");
+    $stmt = $pdo->query("SELECT * FROM carburant ORDER BY carburant");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllTransmissions($pdo) {
-    $stmt = $pdo->query("SELECT * FROM Transmission ORDER BY type");
+    $stmt = $pdo->query("SELECT * FROM transmission ORDER BY type");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllEtatVoitures($pdo) {
-    $stmt = $pdo->query("SELECT * FROM EtatVoiture ORDER BY etat");
+    $stmt = $pdo->query("SELECT * FROM etatvoiture ORDER BY etat");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllStatutVoitures($pdo) {
-    $stmt = $pdo->query("SELECT * FROM StatutVoiture ORDER BY statut");
+    $stmt = $pdo->query("SELECT * FROM statutvoiture ORDER BY statut");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllTypePrestations($pdo) {
-    $stmt = $pdo->query("SELECT * FROM TypePrestation ORDER BY type");
+    $stmt = $pdo->query("SELECT * FROM typeprestation ORDER BY type");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getAllStatutPrestations($pdo) {
-    $stmt = $pdo->query("SELECT * FROM StatutPrestation ORDER BY statut");
+    $stmt = $pdo->query("SELECT * FROM statutprestation ORDER BY statut");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -539,7 +539,7 @@ function countAdresse($pdo, $id) {
 }
 
 function getIdAdresseByRest($pdo, $data) {
-    $sql = "SELECT idAdresse as id FROM Adresse WHERE pays = ? AND ville = ? AND npa = ? AND rue = ? AND numero = ?";
+    $sql = "SELECT idAdresse as id FROM adresse WHERE pays = ? AND ville = ? AND npa = ? AND rue = ? AND numero = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$data["pays"], $data["ville"], $data["npa"], $data["rue"], $data["numero"]]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -5,18 +5,19 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/fonctions.php';
 
 include __DIR__ . '/templates/header.php';
-
 switch ($page) {
     // ==================== CLIENTS ====================
     case 'clients':
         $clients = getAllClientsWithAddress($pdo);
         include __DIR__ . '/templates/clients/list-client.php';
+
         break;
 
     case 'ajout_client':
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultNom = VerifierUnique($pdo, $_POST, "Client", ["nom", "prenom"]);
-            $resultEmail = VerifierUnique($pdo, $_POST, "Client", ["email"]);
+            $resultNom = VerifierUnique($pdo, $_POST, "client", ["nom", "prenom"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "client", ["email"]);
 
             if (!empty($resultNom)) {
                 session_start();
@@ -78,8 +79,8 @@ switch ($page) {
 
     case 'ajout_employe':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultEmail = VerifierUnique($pdo, $_POST, "Employe", ["nom", "prenom"]);
-            $resultEmail = VerifierUnique($pdo, $_POST, "Employe", ["email"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "employe", ["nom", "prenom"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "employe", ["email"]);
             if (!empty($resultNom)) {
                 session_start();
                 $_SESSION['message'] = "erreur dans le nom";
@@ -196,8 +197,8 @@ switch ($page) {
 
     case 'ajout_fournisseur':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultEmail = VerifierUnique($pdo, $_POST, "Fournisseur", ["nom", "prenom"]);
-            $resultEmail = VerifierUnique($pdo, $_POST, "Fournisseur", ["email"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "fournisseur", ["nom", "prenom"]);
+            $resultEmail = VerifierUnique($pdo, $_POST, "fournisseur", ["email"]);
             if (!empty($resultNom)) {
                 session_start();
                 $_SESSION['message'] = "erreur dans le nom";
